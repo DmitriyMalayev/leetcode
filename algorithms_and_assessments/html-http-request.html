@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>AJAX O.G.</title>
+  </head>
+  <body>
+    <header>
+      <h1>AJAX O.G. - XMLHttpRequest</h1>
+    </header>
+    <main>
+      <!-- put content here-->
+    </main>
+    <script defer>
+      //Run the script after loading DOM
+      let url = "https://jsonplaceholder.typicode.com/users";
+      let xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      let fd = new FormData();
+      fd.append("firstName", "Jesse");
+      fd.append("lastName", "Custer");
+
+      xhr.onreadystatechange = function(ev) {
+        //2 - request sent, 3 - something back, 4 - full response
+        console.log(xhr.readyState);
+        if (xhr.readyState === 4) {
+          switch (xhr.status) {
+            case 200:
+            case 304:
+              console.log("OK or Not Modified (cached)", xhr.status);
+              outputUsers(xhr.responseText); //responseXML
+              break;
+            case 201:
+              console.log("Created", xhr.status);
+              let main = document.querySelector("main");
+              main.textContent = xhr.responseText;
+              break;
+            case 403:
+            case 401:
+              console.log("Not Authorized or Forbidden", xhr.status);
+              break;
+            case 404:
+              console.log("Not Found", xhr.status);
+              break;
+            case 500:
+              console.log("Server Side Error", xhr.status);
+              break;
+            default:
+              console.log("Some other code: ", xhr.status, xhr.status);
+          }
+        }
+      };
+
+      xhr.onerror = function(err) {
+        console.warn(err);
+      };
+      xhr.send(fd);
+
+      function outputUsers(str) {
+        let data = JSON.parse(str);
+        let main = document.querySelector("main");
+        data.forEach(item => {
+          let p = document.createElement("p");
+          p.textContent = item.id + " " + item.name;
+          main.appendChild(p);
+        });
+      }
+    </script>
+  </body>
+</html>
